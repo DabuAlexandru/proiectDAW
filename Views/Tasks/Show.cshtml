@@ -1,0 +1,80 @@
+﻿@model proiectDAW.Models.Task
+
+<h1>Afisare detalii task</h1>
+<h2>@ViewBag.message</h2>
+<div class="panel panel-default">
+
+    <div class="panel-heading">
+        <h3>@Model.Title</h3>
+    </div>
+
+    <div class="panel-body">
+        <p>@Model.Description</p>
+        <small>@Model.StartDate - @Model.EndDate</small>
+        <br />
+        <label>Status: </label>
+        @using (Html.BeginForm(actionName: "ChangeState", controllerName: "Tasks",
+                       method: FormMethod.Post, routeValues: new { id = Model.TaskId }))
+        {
+            @Html.HttpMethodOverride(HttpVerbs.Put)
+            @Html.HiddenFor(m => m.Title)
+            @Html.HiddenFor(m => m.Description)
+            @Html.HiddenFor(m => m.StartDate)
+            @Html.HiddenFor(m => m.EndDate)
+            @Html.DropDownListFor(m => m.State, new SelectList(ViewBag.StateList, "Value", "Text"),
+                    null, new { @class = "form-control" })
+            @Html.HiddenFor(m => m.ProjectId)
+            @Html.HiddenFor(m => m.TaskId)
+            <br/>
+            <button type="submit">Aplica modificari</button>
+        }
+        <!--@ViewBag.DisplayState-->
+    </div>
+    <div class="panel-footer">
+        <a class="btn btn-primary btn-block" href="/Tasks/Edit/@Model.TaskId">Editare detalii task</a>
+        @using (Html.BeginForm(actionName: "Delete", controllerName: "Tasks",
+                               method: FormMethod.Post, routeValues: new { id = Model.TaskId }))
+        {
+            @Html.HttpMethodOverride(HttpVerbs.Delete)
+            <button class="btn btn-danger btn-block" type="submit">Stergere task</button>
+        }
+    </div>
+</div>
+
+@foreach (var comment in Model.Comments)
+{
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <p>@comment.Content</p>
+            <i class="glyphicon glyphicon-user"></i> <strong>@comment.User.UserName</strong>
+        </div>
+
+        <div class="panel-footer">
+            <a class="btn btn-primary" href="/Comments/Edit/@comment.CommentId">Editare comentariu</a>
+
+            @using (Html.BeginForm(actionName: "Delete", controllerName: "Comments",
+                               method: FormMethod.Post, routeValues: new { id = comment.CommentId }))
+            {
+                @Html.HttpMethodOverride(HttpVerbs.Delete)
+                <button class="btn btn-danger" type="submit">Stergere comentariu</button>
+            }
+        </div>
+    </div>
+}
+
+@using (Html.BeginForm(actionName: "Show", controllerName: "Tasks"))
+{
+    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+    @Html.Label("Content", "Continut comentariu")
+    <br />
+    @Html.TextArea("Content", null, new { @class = "form-control" })
+    @Html.ValidationMessage("Content", "", new { @class = "text-danger" })
+    <br />
+    <br />
+    @Html.Hidden("TaskId", Model.TaskId)
+    <button type="submit">Adaugare comentariu</button>
+}
+
+<br />
+<a class="btn btn-default btn-block" href="/Projects/Show/@Model.ProjectId">Inapoi la detalii proiect</a>

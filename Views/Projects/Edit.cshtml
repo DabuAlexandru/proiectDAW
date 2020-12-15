@@ -1,0 +1,33 @@
+﻿@model proiectDAW.Models.Project
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h1>Editare detalii proiect</h1>
+
+@using (Html.BeginForm(actionName: "Edit", controllerName: "Projects",
+                      method: FormMethod.Post, routeValues: new { id = Model.ProjectId }))
+{
+    @Html.HttpMethodOverride(HttpVerbs.Put)
+
+    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+    @Html.Label("ProjectTitle", "Titlu proiect")
+    <br />
+    @Html.EditorFor(m => m.ProjectTitle)
+    @Html.ValidationMessageFor(m => m.ProjectTitle, "", new { @class = "text-danger" })
+    <br />
+    <br />
+
+    @Html.Label("ProjectDesc", "Descriere proiect")
+    <br />
+    @Html.EditorFor(m => m.ProjectDesc)
+    @Html.ValidationMessageFor(m => m.ProjectDesc, "", new { @class = "text-danger" })
+    <br />
+    <br />
+    @Html.HiddenFor(m => m.ProjectId)
+
+    <button type="submit">Aplica modificari</button>
+}
+<br />
+<a class="btn btn-default btn-block" href="/Projects/Show/@Model.ProjectId">Anulare editare</a>

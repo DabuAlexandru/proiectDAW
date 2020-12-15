@@ -1,0 +1,49 @@
+﻿@model proiectDAW.Models.Task
+
+
+<h1>Editare detalii task</h1>
+
+@using (Html.BeginForm(actionName: "Edit", controllerName: "Tasks",
+                       method: FormMethod.Post, routeValues: new { id = Model.TaskId }))
+{
+    @Html.HttpMethodOverride(HttpVerbs.Put)
+
+    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+    @Html.Label("Title", "Titlu task")
+    <br />
+    @Html.EditorFor(m => m.Title)
+    @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger" })
+    <br />
+    <br />
+
+    @Html.Label("Description", "Descriere task")
+    <br />
+    @Html.EditorFor(m => m.Description)
+    <br />
+    <br />
+
+    @Html.Label("StartDate", "Data start")
+    <br />
+    @Html.EditorFor(m => m.StartDate, new { @type = "date" })
+    <br />
+    <br />
+
+    @Html.Label("EndDate", "Data finalizare task")
+    <br />
+    @Html.EditorFor(m => m.EndDate, new { @type = "date" })
+    @Html.ValidationMessageFor(m => m.EndDate, "", new { @class = "text-danger" })
+    <br />
+    <br />
+    @Html.Label("State", "Status task")
+    <br />
+    @Html.DropDownListFor(m => m.State, new SelectList(ViewBag.StateList, "Value", "Text"),
+            null, new { @class = "form-control" })
+    <br />
+    <br />
+    @Html.HiddenFor(m => m.ProjectId)
+    @Html.HiddenFor(m => m.TaskId)
+
+    <button type="submit">Aplica modificari</button>
+}
+<a class="btn btn-default btn-block" href="/Tasks/Show/@Model.TaskId">Anulare editare task</a>

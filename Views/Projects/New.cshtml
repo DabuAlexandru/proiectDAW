@@ -1,0 +1,27 @@
+﻿@model proiectDAW.Models.Project
+
+@{
+    ViewBag.Title = "New";
+}
+
+<h1>Creare nou proiect</h1>
+
+@using (Html.BeginForm(actionName: "New", controllerName: "Projects"))
+{
+    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+    @Html.Label("ProjectTitle", "Titlu proiect")
+    <br />
+    @Html.TextBox("ProjectTitle", null, new { @class = "form-control" })
+    @Html.ValidationMessageFor(m => m.ProjectTitle, "", new { @class = "text-danger" })
+    <br />
+    <br />
+    @Html.HiddenFor(m => m.OrganizerId)
+    @Html.Label("ProjectDesc", "Descriere proiect")
+    <br />
+    @Html.TextArea("ProjectDesc", null, new { @class = "form-control" })
+    @Html.ValidationMessageFor(m => m.ProjectDesc, "", new { @class = "text-danger" })
+    <br />
+    <br />
+    <button type="submit">Adaugare proiect</button>
+}
+

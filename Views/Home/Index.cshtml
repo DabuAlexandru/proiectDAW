@@ -1,0 +1,15 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>Task Manager</h1>
+    <p class="lead">Aceasta este o platforma pentru a va putea organiza task-urile, fie ca sunt proiecte personale, sau in cadrul unei echipe.</p>
+    @if (User.Identity.Name == "")
+    {
+        <p class="lead"><strong>!!! Daca vreti sa folositi aplicatia va trebui sa va faceti un cont !!!</strong></p>
+        <p class="col-md-2"><a href="/Account/Login" class="btn btn-primary btn-lg">Log in</a></p>
+        <p class="col-md-2"><a href="/Account/Register" class="btn btn-primary btn-lg">Register</a></p>
+    }
+    <br />
+</div>

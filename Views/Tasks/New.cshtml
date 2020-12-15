@@ -1,0 +1,46 @@
+﻿@model proiectDAW.Models.Task
+
+@{
+    ViewBag.Titlu = "New";
+}
+
+<h1>Adaugare task</h1>
+
+@using (Html.BeginForm(actionName: "New", controllerName: "Tasks"))
+{
+    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+    @Html.Label("Title", "Titlu task")
+    <br />
+    @Html.TextBox("Title", null)
+    @Html.ValidationMessageFor(m => m.Title, "", new { @class = "text-danger" })
+    <br />
+    <br />
+
+    @Html.Label("Description", "Descriere task")
+    <br />
+    @Html.TextArea("Description", null, new { @class = "form-control" })
+    <br />
+    <br />
+
+    @Html.HiddenFor(m => m.ProjectId)
+
+    @Html.Label("StartDate", "Data start")
+    <br />
+    @Html.EditorFor(m => m.StartDate, new { @type = "date" })
+    <br />
+    <br />
+
+    @Html.Label("EndDate", "Data finalizare task")
+    <br />
+    @Html.EditorFor(m => m.EndDate, new { @type = "date" })
+    <br />
+    <br />
+
+    @Html.HiddenFor(m => m.State)
+
+    <button type="submit">Adaugare task</button>
+}
+
+<a class="btn btn-default btn-block" href="/Projects/Show/@Model.ProjectId">Anulare adaugare task</a>
+

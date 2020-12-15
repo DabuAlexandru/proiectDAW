@@ -1,0 +1,24 @@
+﻿
+@{
+    ViewBag.Title = "Afisare proiecte";
+}
+
+<h1>@ViewBag.Title</h1>
+<h2>@ViewBag.Message</h2>
+<hr />
+
+@foreach (var project in ViewBag.Projects)
+{
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h2>@project.ProjectTitle</h2>
+        </div>
+        <div class="panel-body">
+            <a class="btn btn-primary btn-block" href="/Projects/Show/@project.ProjectId">Afisare detalii proiect</a>
+        </div>
+    </div>
+    <br />
+    <hr />
+}
+
+<a class="btn btn-default btn-block" href="/Projects/New">Adaugare proiect nou</a>
