@@ -1,0 +1,14 @@
+App_Data/
+Global.asax.cs
+Migrations/
+Properties/
+Scripts/
+Web.Debug.config
+Web.Release.config
+bin/
+favicon.ico
+fonts/
+obj/
+packages.config
+proiectDAW.csproj
+proiectDAW.csproj.user
