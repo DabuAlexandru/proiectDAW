@@ -30,15 +30,19 @@
         }
         <!--@ViewBag.DisplayState-->
     </div>
-    <div class="panel-footer">
-        <a class="btn btn-primary btn-block" href="/Tasks/Edit/@Model.TaskId">Editare detalii task</a>
-        @using (Html.BeginForm(actionName: "Delete", controllerName: "Tasks",
-                               method: FormMethod.Post, routeValues: new { id = Model.TaskId }))
-        {
-            @Html.HttpMethodOverride(HttpVerbs.Delete)
-            <button class="btn btn-danger btn-block" type="submit">Stergere task</button>
-        }
-    </div>
+    @if(ViewBag.isAdmin || (ViewBag.isOrganizer && ViewBag.currentUserId == Model.Project.OrganizerId))
+    {
+        <div class="panel-footer">
+            <a class="btn btn-primary btn-block" href="/Tasks/Edit/@Model.TaskId">Editare detalii task</a>
+            @using (Html.BeginForm(actionName: "Delete", controllerName: "Tasks",
+                                   method: FormMethod.Post, routeValues: new { id = Model.TaskId }))
+            {
+                @Html.HttpMethodOverride(HttpVerbs.Delete)
+                <button class="btn btn-danger btn-block" type="submit">Stergere task</button>
+            }
+        </div>
+    }
+    
 </div>
 
 @foreach (var comment in Model.Comments)
@@ -48,17 +52,20 @@
             <p>@comment.Content</p>
             <i class="glyphicon glyphicon-user"></i> <strong>@comment.User.UserName</strong>
         </div>
+        @if(ViewBag.isAdmin || ViewBag.currentUserId == comment.UserId)
+        {
+            <div class="panel-footer">
+                <a class="btn btn-primary" href="/Comments/Edit/@comment.CommentId">Editare comentariu</a>
 
-        <div class="panel-footer">
-            <a class="btn btn-primary" href="/Comments/Edit/@comment.CommentId">Editare comentariu</a>
-
-            @using (Html.BeginForm(actionName: "Delete", controllerName: "Comments",
-                               method: FormMethod.Post, routeValues: new { id = comment.CommentId }))
-            {
-                @Html.HttpMethodOverride(HttpVerbs.Delete)
-                <button class="btn btn-danger" type="submit">Stergere comentariu</button>
-            }
-        </div>
+                @using (Html.BeginForm(actionName: "Delete", controllerName: "Comments",
+                                   method: FormMethod.Post, routeValues: new { id = comment.CommentId }))
+                {
+                    @Html.HttpMethodOverride(HttpVerbs.Delete)
+                    <button class="btn btn-danger" type="submit">Stergere comentariu</button>
+                }
+            </div>
+        }
+        
     </div>
 }
 

@@ -20,11 +20,10 @@ namespace proiectDAW.Models
             // Add custom user claims here
             return userIdentity;
         }
-        [InverseProperty("Organizer")]
-        public virtual ICollection<Project> OrganizerOf { get; set; }
         [InverseProperty("Users")]
         public virtual ICollection<Project> Projects { get; set; }
-        public virtual ICollection<Task> Tasks { get; set; }
+
+        public virtual ICollection<Project> OrgProjects { get; set; }
     }
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>

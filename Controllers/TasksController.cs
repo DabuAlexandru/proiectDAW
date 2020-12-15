@@ -38,9 +38,9 @@ namespace proiectDAW.Controllers
         [Authorize(Roles = "Organizer,Admin")]
         public ActionResult New(Task NewTask)
         {
-            ViewBag.StateList = GetStateList();
             try
             {
+                ViewBag.StateList = GetStateList();
                 Project project = db.Projects.Find(NewTask.ProjectId);
                 if (project.OrganizerId == User.Identity.GetUserId() || User.IsInRole("Admin"))
                 {
@@ -76,6 +76,10 @@ namespace proiectDAW.Controllers
                 ViewBag.Message = TempData["message"];
             }
 
+            ViewBag.isAdmin = User.IsInRole("Admin");
+            ViewBag.isOrganizer = User.IsInRole("Organizer");
+            ViewBag.currentUserId = User.Identity.GetUserId();
+
             return View(task);
         }
         //Edit
@@ -100,10 +104,11 @@ namespace proiectDAW.Controllers
         [Authorize(Roles = "Organizer,Admin")]
         public ActionResult Edit(int id, Task EditedTask)
         {
-            // ViewBag.StateList = new List<String>{ "Not Started", "In Progress", "Done"};
-            ViewBag.StateList = GetStateList();
             try
             {
+                // ViewBag.StateList = new List<String>{ "Not Started", "In Progress", "Done"};
+                ViewBag.StateList = GetStateList();
+
                 if (ModelState.IsValid)
                 {
                     Task task = db.Tasks.Find(id);
@@ -162,9 +167,13 @@ namespace proiectDAW.Controllers
         public ActionResult ChangeState(int id, Task EditedTask)
         {
             // aici tot ca la Show, deoarece practic fac parte din aceeasi serie de metode
-            ViewBag.StateList = GetStateList();
             try
             {
+                ViewBag.StateList = GetStateList();
+                ViewBag.isAdmin = User.IsInRole("Admin");
+                ViewBag.isOrganizer = User.IsInRole("Organizer");
+                ViewBag.currentUserId = User.Identity.GetUserId();
+
                 if (ModelState.IsValid)
                 {
                     Task task = db.Tasks.Find(id);
@@ -192,6 +201,10 @@ namespace proiectDAW.Controllers
         {
             NewComment.UserId = User.Identity.GetUserId();
             ViewBag.StateList = GetStateList();
+            ViewBag.isAdmin = User.IsInRole("Admin");
+            ViewBag.isOrganizer = User.IsInRole("Organizer");
+            ViewBag.currentUserId = User.Identity.GetUserId();
+
             try
             {
                 if (ModelState.IsValid)

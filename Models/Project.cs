@@ -19,12 +19,12 @@ namespace proiectDAW.Models
         [Required(ErrorMessage ="Descrierea proiectului este obligatorie")]
         [DataType(DataType.MultilineText)]
         public string ProjectDesc { get; set; }
-
         public string OrganizerId { get; set; }
-        public virtual ApplicationUser Organizer { get; set; }
 
+        [InverseProperty("Projects")]
         public virtual ICollection<ApplicationUser> Users { get; set; }
-
         public virtual ICollection<Task> Tasks { get; set; }
+        public virtual ApplicationUser Organizer { get; set; }
+        
     }
 }

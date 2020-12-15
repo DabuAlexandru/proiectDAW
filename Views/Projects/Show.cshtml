@@ -13,20 +13,26 @@
         <p>@Model.ProjectDesc</p>
         <i class="glyphicon glyphicon-user"></i> <i>Organizator:</i> <strong>@Model.Organizer.UserName</strong>
     </div>
-    <div class="panel-footer">
-        
-        <a class="btn btn-warning btn-block" href="/Projects/Edit/@Model.ProjectId">Editare proiect</a>
+   
+    @if(ViewBag.isAdmin || (ViewBag.isOrganizer && ViewBag.currentUserId == Model.OrganizerId))
+    {
+        <div class="panel-footer">
 
-        @using (Html.BeginForm(actionName: "Delete", controllerName: "Projects",
-                              method: FormMethod.Post, routeValues: new { id = Model.ProjectId }))
-        {
-            @Html.HttpMethodOverride(HttpVerbs.Delete)
-            <button class="btn btn-danger btn-block" type="submit">Stergere proiect</button>
-        }
+            <a class="btn btn-warning btn-block" href="/Projects/Edit/@Model.ProjectId">Editare proiect</a>
 
-        <a class="btn btn-primary btn-block" href="/Tasks/New/@Model.ProjectId">Adaugare task</a>
-        
-    </div>
+            @using (Html.BeginForm(actionName: "Delete", controllerName: "Projects",
+                                  method: FormMethod.Post, routeValues: new { id = Model.ProjectId }))
+            {
+                @Html.HttpMethodOverride(HttpVerbs.Delete)
+                <button class="btn btn-danger btn-block" type="submit">Stergere proiect</button>
+            }
+
+            <a class="btn btn-primary btn-block" href="/Tasks/New/@Model.ProjectId">Adaugare task</a>
+            <a class="btn btn-info btn-block" href="/Projects/MemberPanel/@Model.ProjectId">Gestionare membri</a>
+
+        </div>
+    }
+    
 </div>
     @foreach (var task in Model.Tasks)
     {

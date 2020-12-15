@@ -1,0 +1,36 @@
+﻿@model proiectDAW.Models.Project
+
+
+<h1>Gestionare membri proiect: @Model.ProjectTitle</h1>
+<h2>@ViewBag.Message</h2>
+@using (Html.BeginForm(actionName: "AddMember", controllerName: "Projects",
+                      method: FormMethod.Post, routeValues: new { id = Model.ProjectId }))
+{
+    @Html.Label("Username", "Nume utilizator:")
+    <br />
+    @Html.TextBox("Username")
+
+    <button type="submit">Adauga membru</button>
+}
+
+    <div class="panel panel-default">
+        @if (ViewBag.memberCount == 0)
+        {
+            <p>Nu exista membri asociati acestui proiect.</p>
+        }
+        else
+        {
+            foreach (var user in Model.Users)
+            {
+                <p>@user.UserName</p>
+                <p>@user.Id</p>
+                using (Html.BeginForm(actionName: "RemoveMember",controllerName: "Projects", method: FormMethod.Post, routeValues: new { id = user.Id}))
+                {
+                    @Html.HttpMethodOverride(HttpVerbs.Delete)
+
+                    @Html.Hidden("projectId", Model.ProjectId)
+                    <button class="btn btn-danger" type="submit">Eliminare din echipa</button>
+                }
+            }
+        }
+    </div>
