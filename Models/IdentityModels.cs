@@ -32,7 +32,7 @@ namespace proiectDAW.Models
             : base("DefaultConnection", throwIfV1Schema: false)
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<ApplicationDbContext,
-            proiectDAW.Migrations.Configuration>("DefaultConnection"));
+                proiectDAW.Migrations.Configuration>("DefaultConnection"));
         }
 
         public DbSet<Project> Projects { get; set; }

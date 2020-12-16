@@ -16,11 +16,8 @@ namespace proiectDAW.Controllers
         [Authorize(Roles = "User,Organizer,Admin")]
         public ActionResult Index()
         {
-            /*
-             Aici o sa dam show numai la proiectele din care fac parte userii, ma rog.. si admin-ul le vede pe toate
-             */
-
-            ViewBag.Projects = db.Projects;
+            ViewBagRoles();
+            ViewBagProjects();              
 
             if (TempData.ContainsKey("message"))
             {
@@ -258,7 +255,7 @@ namespace proiectDAW.Controllers
                 }
             }
             else
-                TempData["message"] = "Nu exista nici un utilizator cu numele: " + username;
+                TempData["message"] = "Nu exista niciun utilizator cu numele: " + username;
             return Redirect("/Projects/MemberPanel/" + id.ToString());
         }
 
@@ -297,6 +294,39 @@ namespace proiectDAW.Controllers
             });
 
             return selectList;
+        }
+        [NonAction]
+        public void ViewBagRoles()
+        {
+            string currentUserId = User.Identity.GetUserId();
+
+            ApplicationDbContext context = new ApplicationDbContext();
+            var UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
+
+            ViewBag.isAdmin = UserManager.IsInRole(currentUserId, "Admin");
+            ViewBag.isOrganizer = UserManager.IsInRole(currentUserId, "Organizer");
+
+
+        }
+
+        [NonAction]
+        public void ViewBagProjects()
+        {
+            string currentUserId = User.Identity.GetUserId();
+            ApplicationUser currentUser = db.Users.Find(currentUserId);
+            ApplicationDbContext context = new ApplicationDbContext();
+            var UserManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(context));
+
+            if (UserManager.IsInRole(currentUserId, "Admin"))
+                ViewBag.Projects = db.Projects;
+            else
+            {
+                ViewBag.UserTeams = currentUser.Projects;
+                ViewBag.teamCount = currentUser.Projects.Count();
+            }
+
+            if (UserManager.IsInRole(currentUserId, "Organizer"))
+                ViewBag.UserOrgProjects = currentUser.OrgProjects;
         }
     }
 }

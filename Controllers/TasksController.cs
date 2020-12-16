@@ -23,7 +23,7 @@ namespace proiectDAW.Controllers
                 Task task = new Task();
                 task.ProjectId = id;
                 task.StartDate = DateTime.Now;
-                task.EndDate = DateTime.Now;
+                task.EndDate = task.StartDate.AddDays(1);
                 task.State = 0;
 
                 return View(task);
@@ -46,6 +46,11 @@ namespace proiectDAW.Controllers
                 {
                     if (ModelState.IsValid)
                     {
+                        if (DateTime.Compare(NewTask.StartDate, NewTask.EndDate) >= 0)
+                        {
+                            ViewBag.Message = "Data de final trebuie sa fie mai mare decat data de inceput!!!";
+                            return View(NewTask);
+                        }
                         db.Tasks.Add(NewTask);
                         db.SaveChanges();
                         TempData["message"] = "Task adaugat cu succes";
@@ -188,6 +193,51 @@ namespace proiectDAW.Controllers
                 }
                 else
                     return Redirect("/Tasks/Show/" + EditedTask.TaskId.ToString());
+            }
+            catch (Exception e)
+            {
+                return View(EditedTask);
+            }
+        }
+        
+        public ActionResult Assign(int id)
+        {
+            Task task = db.Tasks.Find(id);
+            return View(task);
+        }
+
+        [HttpPut]
+        public ActionResult Assign(int id, Task EditedTask)
+        {
+            try
+            {
+                // ViewBag.StateList = new List<String>{ "Not Started", "In Progress", "Done"};
+                ViewBag.StateList = GetStateList();
+
+                if (ModelState.IsValid)
+                {
+                    Task task = db.Tasks.Find(id);
+                    Project project = db.Projects.Find(task.ProjectId);
+                    // un alt organizator nu poate edita un task din proiectul altui organizator
+                    if (project.OrganizerId == User.Identity.GetUserId() || User.IsInRole("Admin"))
+                    {
+                        if (TryUpdateModel(task))
+                        {
+                            task = EditedTask;
+                            db.SaveChanges();
+                            TempData["message"] = "Taskul a fost actualizat cu succes!";
+                            return Redirect("/Tasks/Show/" + EditedTask.TaskId.ToString());
+                        }
+                        return View(EditedTask);
+                    }
+                    else
+                    {
+                        return Redirect("/Home/Index");
+                    }
+                }
+                else
+                    return View(EditedTask);
+
             }
             catch (Exception e)
             {

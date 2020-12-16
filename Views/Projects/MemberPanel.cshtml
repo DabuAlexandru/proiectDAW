@@ -13,24 +13,26 @@
     <button type="submit">Adauga membru</button>
 }
 
-    <div class="panel panel-default">
-        @if (ViewBag.memberCount == 0)
+<div class="panel panel-default">
+    @if (ViewBag.memberCount == 0)
+    {
+        <p>Nu exista membri asociati acestui proiect.</p>
+    }
+    else
+    {
+        foreach (var user in Model.Users)
         {
-            <p>Nu exista membri asociati acestui proiect.</p>
-        }
-        else
-        {
-            foreach (var user in Model.Users)
+            @user.UserName
+            using (Html.BeginForm(actionName: "RemoveMember",controllerName: "Projects", method: FormMethod.Post, routeValues: new { id = user.Id}))
             {
-                <p>@user.UserName</p>
-                <p>@user.Id</p>
-                using (Html.BeginForm(actionName: "RemoveMember",controllerName: "Projects", method: FormMethod.Post, routeValues: new { id = user.Id}))
-                {
-                    @Html.HttpMethodOverride(HttpVerbs.Delete)
+                @Html.HttpMethodOverride(HttpVerbs.Delete)
 
-                    @Html.Hidden("projectId", Model.ProjectId)
-                    <button class="btn btn-danger" type="submit">Eliminare din echipa</button>
-                }
+                @Html.Hidden("projectId", Model.ProjectId)
+                <button class="btn btn-danger" type="submit">Eliminare din echipa</button>
+                <br /> <br />
             }
         }
-    </div>
+    }
+</div>
+
+<a class="btn btn-default btn-block" href="/Projects/Show/@Model.ProjectId">Inapoi la proiect</a>

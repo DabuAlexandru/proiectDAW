@@ -29,6 +29,7 @@ namespace proiectDAW.Models
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime EndDate { get; set; }
         
+        
 
         //[0-2]
         public int State { get; set; }
@@ -37,9 +38,8 @@ namespace proiectDAW.Models
         1 - InProgress
         2 - Done
         */
-
-        public ICollection<String> Assigned { get; set; }
-
+        public string UserId { get; set; }
+        public virtual ApplicationUser User { get; set; }
         public virtual Project Project { get; set; }
         public virtual ICollection<Comment> Comments { get; set; }
        

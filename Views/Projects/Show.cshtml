@@ -45,6 +45,17 @@
                 <p>@task.Description</p>
                 <small>@task.StartDate - @task.EndDate</small>
                 <br />
+                <div>
+                    <label>User Asignat:</label>
+                    @if (task.UserId is null)
+                    {
+                        <strong>Nu exista user asignat pentru acest task</strong>
+                    }
+                    else
+                    {
+                        @task.User.UserName
+                    }
+                </div>
                 <label>Status: </label>
                 @(((IEnumerable<dynamic>)ViewBag.StateList).SingleOrDefault(m => m.Value == task.State.ToString()).Text)
             </div>

@@ -1,0 +1,44 @@
+﻿@model proiectDAW.Models.Task
+
+<h2>Assign</h2>
+
+<div class="panel panel-default">
+    <strong>@Model.Project.Organizer.UserName</strong>
+    @using (Html.BeginForm(actionName: "Edit", controllerName: "Tasks",
+    method: FormMethod.Post, routeValues: new { id = Model.TaskId }))
+    {
+        @Html.HttpMethodOverride(HttpVerbs.Put)
+        @Html.HiddenFor(m => m.Title)
+        @Html.HiddenFor(m => m.Description)
+        @Html.HiddenFor(m => m.StartDate)
+        @Html.HiddenFor(m => m.EndDate)
+        @Html.HiddenFor(m => m.ProjectId)
+        @Html.HiddenFor(m => m.TaskId)
+        @Html.Hidden("UserId", Model.Project.OrganizerId)
+
+        <button type="submit">Asigneaza la task</button>
+        <br /> <br />
+    }
+
+    @foreach (var user in Model.Project.Users)
+    {
+        @user.UserName
+        using (Html.BeginForm(actionName: "Edit", controllerName: "Tasks",
+                   method: FormMethod.Post, routeValues: new { id = Model.TaskId }))
+        {
+            @Html.HttpMethodOverride(HttpVerbs.Put)
+            @Html.HiddenFor(m => m.Title)
+            @Html.HiddenFor(m => m.Description)
+            @Html.HiddenFor(m => m.StartDate)
+            @Html.HiddenFor(m => m.EndDate)
+            @Html.HiddenFor(m => m.ProjectId)
+            @Html.HiddenFor(m => m.TaskId)
+            @Html.Hidden("UserId", user.Id)
+
+            <button type="submit">Asigneaza la task</button>
+            <br />
+        }
+    }
+
+</div>
+
