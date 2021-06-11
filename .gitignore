@@ -6,7 +6,6 @@ Scripts/
 Web.Debug.config
 Web.Release.config
 bin/
-favicon.ico
 fonts/
 obj/
 packages.config

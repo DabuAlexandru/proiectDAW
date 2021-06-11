@@ -44,13 +44,14 @@ namespace proiectDAW.Controllers
                 Project project = db.Projects.Find(NewTask.ProjectId);
                 if (project.OrganizerId == User.Identity.GetUserId() || User.IsInRole("Admin"))
                 {
+                    if (DateTime.Compare(NewTask.StartDate, NewTask.EndDate) >= 0)
+                    {
+                        ViewBag.Message = "Data de final trebuie sa fie mai mare decat data de inceput!!!";
+                        return View(NewTask);
+                    }
                     if (ModelState.IsValid)
                     {
-                        if (DateTime.Compare(NewTask.StartDate, NewTask.EndDate) >= 0)
-                        {
-                            ViewBag.Message = "Data de final trebuie sa fie mai mare decat data de inceput!!!";
-                            return View(NewTask);
-                        }
+                        
                         db.Tasks.Add(NewTask);
                         db.SaveChanges();
                         TempData["message"] = "Task adaugat cu succes";
@@ -75,7 +76,12 @@ namespace proiectDAW.Controllers
             // aici poate sa punem sa faca parte din echipa proiectului pentru a putea vizualiza
             ViewBag.StateList = GetStateList();
             Task task = db.Tasks.Find(id);
-            ViewBag.DisplayState = GetStateList().SingleOrDefault(m => m.Value == task.State.ToString()).Text;
+            if (task.Project.OrganizerId != User.Identity.GetUserId() && !User.IsInRole("Admin") && !IsInTeam(task.Project, User.Identity.GetUserId()))
+            {
+                TempData["message"] = "Nu aveti dreptul sa vizualizati task-ul unui proiect din care nu faceti parte!";
+                return Redirect("/Projects/Index");
+            }
+            // ViewBag.DisplayState = GetStateList().SingleOrDefault(m => m.Value == task.State.ToString()).Text;
             if (TempData.ContainsKey("message"))
             {
                 ViewBag.Message = TempData["message"];
@@ -101,7 +107,7 @@ namespace proiectDAW.Controllers
             else
             {
                 TempData["message"] = "Nu aveti dreptul sa faceti modificari asupra unui proiect care nu va apartine!";
-                return Redirect("/Home/Index");
+                return Redirect("/Projects/Index");
             }
         }
 
@@ -113,7 +119,11 @@ namespace proiectDAW.Controllers
             {
                 // ViewBag.StateList = new List<String>{ "Not Started", "In Progress", "Done"};
                 ViewBag.StateList = GetStateList();
-
+                if (DateTime.Compare(EditedTask.StartDate, EditedTask.EndDate) >= 0)
+                {
+                    ViewBag.Message = "Data de final trebuie sa fie mai mare decat data de inceput!!!";
+                    return View(EditedTask);
+                }
                 if (ModelState.IsValid)
                 {
                     Task task = db.Tasks.Find(id);
@@ -146,6 +156,7 @@ namespace proiectDAW.Controllers
         }
 
         //Delete
+        [HttpDelete]
         [Authorize(Roles = "Organizer,Admin")]
         public ActionResult Delete(int id)
         {
@@ -174,6 +185,13 @@ namespace proiectDAW.Controllers
             // aici tot ca la Show, deoarece practic fac parte din aceeasi serie de metode
             try
             {
+                Project project = db.Projects.Find(EditedTask.ProjectId);
+                if (project.OrganizerId != User.Identity.GetUserId() && !User.IsInRole("Admin") && !IsInTeam(project, User.Identity.GetUserId()))
+                {
+                    TempData["message"] = "Nu aveti dreptul sa modificati state-ul unui task al unui proiect din care nu faceti parte!";
+                    return Redirect("/Home/Index");
+                }
+
                 ViewBag.StateList = GetStateList();
                 ViewBag.isAdmin = User.IsInRole("Admin");
                 ViewBag.isOrganizer = User.IsInRole("Organizer");
@@ -199,7 +217,8 @@ namespace proiectDAW.Controllers
                 return View(EditedTask);
             }
         }
-        
+
+        [Authorize(Roles = "Organizer, Admin")]
         public ActionResult Assign(int id)
         {
             Task task = db.Tasks.Find(id);
@@ -207,6 +226,7 @@ namespace proiectDAW.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Organizer, Admin")]
         public ActionResult Assign(int id, Task EditedTask)
         {
             try
@@ -246,7 +266,7 @@ namespace proiectDAW.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Organizer,Admin, User")]
+        [Authorize(Roles = "Organizer, Admin, User")]
         public ActionResult Show(Comment NewComment)
         {
             NewComment.UserId = User.Identity.GetUserId();
@@ -257,6 +277,12 @@ namespace proiectDAW.Controllers
 
             try
             {
+                Task a = db.Tasks.Find(NewComment.TaskId);
+                // nu se poate accesa un task al proiectului de care nu apartineti
+                if (a.Project.OrganizerId != User.Identity.GetUserId() && !User.IsInRole("Admin") && !IsInTeam(a.Project, User.Identity.GetUserId()))
+                {
+                    return Redirect("/Home/Index");
+                }
                 if (ModelState.IsValid)
                 {
                     db.Comments.Add(NewComment);
@@ -265,7 +291,6 @@ namespace proiectDAW.Controllers
 
                     return Redirect("/Tasks/Show/" + NewComment.TaskId.ToString());
                 }
-                Task a = db.Tasks.Find(NewComment.TaskId);
                 return View(a);
 
             }
@@ -300,6 +325,14 @@ namespace proiectDAW.Controllers
             });
 
             return selectList;
+        }
+
+        [NonAction]
+        public bool IsInTeam(Project project, string currentUserId)
+        {
+            if (project.Users.FirstOrDefault(m => m.Id == currentUserId) is null)
+                return false;
+            return true;
         }
     }
 }

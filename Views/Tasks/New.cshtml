@@ -1,15 +1,23 @@
 ﻿@model proiectDAW.Models.Task
 
 @{
+    /**/
+
     ViewBag.Titlu = "New";
 }
 
 <h1>Adaugare task</h1>
-<h2>@ViewBag.message</h2>
+
 
 @using (Html.BeginForm(actionName: "New", controllerName: "Tasks"))
 {
     @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+    if (ViewBag.message != null)
+    {
+        <ul>
+            <li class="text-danger">@ViewBag.message</li>
+        </ul>
+    }
 
     @Html.Label("Title", "Titlu task")
     <br />
@@ -25,7 +33,7 @@
     <br />
 
     @Html.HiddenFor(m => m.ProjectId)
-
+    <p class="text-danger">@ViewBag.message</p>
     @Html.Label("StartDate", "Data start")
     <br />
     @Html.EditorFor(m => m.StartDate, new { @type = "date" })

@@ -35,6 +35,7 @@ namespace proiectDAW.Controllers
             project.OrganizerId = User.Identity.GetUserId();
             return View(project);
         }
+
         [HttpPost]
         [Authorize(Roles = "User,Organizer,Admin")]
         public ActionResult New(Project NewProject)
@@ -97,7 +98,7 @@ namespace proiectDAW.Controllers
         }
 
         [HttpPut]
-        [Authorize(Roles = "Organizer,Admin")]
+        [Authorize(Roles = "Organizer, Admin")]
         public ActionResult Edit(int id, Project EditedProject)
         {
             try
@@ -134,10 +135,15 @@ namespace proiectDAW.Controllers
         }
 
         //Show
-        [Authorize(Roles = "User,Organizer,Admin")]
+        [Authorize(Roles = "User, Organizer, Admin")]
         public ActionResult Show(int id)
         {
             Project project = db.Projects.Find(id);
+            if (project.OrganizerId != User.Identity.GetUserId() && !User.IsInRole("Admin") && !IsInTeam(project, User.Identity.GetUserId()))
+            {
+                TempData["message"] = "Nu aveti dreptul sa vizualizati un proiect din care nu faceti parte!";
+                return RedirectToAction("Index");
+            }
             ViewBag.StateList = GetStateList();
             if (TempData.ContainsKey("message"))
             {
@@ -152,6 +158,7 @@ namespace proiectDAW.Controllers
         }
 
         //Delete
+        [HttpDelete]
         [Authorize(Roles = "Organizer,Admin")]
         public ActionResult Delete(int id)
         {
@@ -202,6 +209,7 @@ namespace proiectDAW.Controllers
             return RedirectToAction("Index");
         }
 
+        [Authorize(Roles = "Organizer,Admin")]
         public ActionResult MemberPanel(int id)
         {
             Project project = db.Projects.Find(id);
@@ -215,7 +223,7 @@ namespace proiectDAW.Controllers
             return View(project);
         }
 
-        [HttpPost]
+        [Authorize(Roles = "Organizer,Admin")]
         public ActionResult AddMember(int id, string username)
         {
             Project project = db.Projects.Find(id);
@@ -260,6 +268,7 @@ namespace proiectDAW.Controllers
         }
 
         [HttpDelete]
+        [Authorize(Roles = "Organizer,Admin")]
         public ActionResult RemoveMember(string id, int projectId)
         {
             Project currentProject = db.Projects.Find(projectId);
@@ -327,6 +336,14 @@ namespace proiectDAW.Controllers
 
             if (UserManager.IsInRole(currentUserId, "Organizer"))
                 ViewBag.UserOrgProjects = currentUser.OrgProjects;
+        }
+
+        [NonAction]
+        public bool IsInTeam(Project project, string currentUserId)
+        {
+            if(project.Users.FirstOrDefault(m => m.Id == currentUserId) is null)
+                return false;
+            return true;
         }
     }
 }

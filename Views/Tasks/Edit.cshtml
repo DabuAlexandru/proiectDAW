@@ -9,7 +9,12 @@
     @Html.HttpMethodOverride(HttpVerbs.Put)
 
     @Html.ValidationSummary(false, "", new { @class = "text-danger" })
-
+    if (ViewBag.message != null)
+    {
+        <ul>
+            <li class="text-danger">@ViewBag.message</li>
+        </ul>
+    }
     @Html.Label("Title", "Titlu task")
     <br />
     @Html.EditorFor(m => m.Title)
@@ -22,7 +27,7 @@
     @Html.EditorFor(m => m.Description)
     <br />
     <br />
-
+    <p class="text-danger">@ViewBag.message</p>
     @Html.Label("StartDate", "Data start")
     <br />
     @Html.EditorFor(m => m.StartDate, new { @type = "date" })
